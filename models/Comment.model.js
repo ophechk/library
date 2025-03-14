@@ -1,25 +1,16 @@
 const { DataTypes } = require('sequelize');
 const db = require('..config/db');
 
-
 const Comment = db.define('Comment', {
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
-        references: {
-            model: 'users',
-            key: 'id'
-        }
+        primaryKey: true
     },
     book_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
-        references: {
-            model: 'books',
-            key: 'id'
-        }
+        primaryKey: true
     },
     comment_date: {
         type: DataTypes.DATE,
