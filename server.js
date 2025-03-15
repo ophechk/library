@@ -18,6 +18,18 @@ const PORT = ENV.PORT || 3000
 
 // prefix
 
+//middlewares de gestion d'erreurs
+app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    const message = err.messgae || "Une erreur est survenue";
+    const details = err.details || null;
+
+    res.status(status).json({error: {
+        status,
+        message,
+        details
+    }});
+});
 
 // serveur
 
