@@ -2,8 +2,10 @@ console.log('Démarage du serveur...');
 
 const express = require('express');
 const ENV = require('./config');
+const {db}= require('./models');
+
+
 const app = express();
-const db = require('./config/db');
 
 // importation des routes
 
