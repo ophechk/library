@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const db = require('../config/db');
-const bcrypt = require('bcrypt');
 
 // définir le modèle (table users) avec Sequelize
 
@@ -32,12 +31,7 @@ const User = db.define('Users', {
     },
     password: {
         type: DataTypes.STRING(255),
-        allowNull: false,
-        set(value) {
-            // Hashage du mot de passe avant de le stocker
-            const hashedPassword = bcrypt.hashSync(value, 10);
-            this.setDataValue('password', hashedPassword);
-        }
+        allowNull: false
     },
     registration_date: {
         type: DataTypes.DATE,
@@ -45,12 +39,12 @@ const User = db.define('Users', {
     },
     isActive: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         defaultValue: true
     },
     isVerified: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
         defaultValue: false
     }
 }, {
