@@ -20,7 +20,6 @@ exports.signup = async (req, res, next) => {
         res.status(201).json({ message: "Utilisateur crée" });
 
     } catch (error) {
-        console.error('Erreur lors de la création de l\'utilisateur :', error);
         next(createError(500, "Erreur lors de l'inscription", error.message));
     }
 };
