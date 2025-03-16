@@ -17,7 +17,6 @@ Comment.belongsTo(User, {
   foreignKey: 'user_id',
   as: 'user'  // Alias pour accéder à l'utilisateur d'un commentaire
 });
-
 // Book <-> Comment (Un livre peut avoir plusieurs commentaires)
 Book.hasMany(Comment, { 
   foreignKey: 'book_id',

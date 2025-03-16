@@ -79,6 +79,6 @@ exports.getBooks = async (req, res, next) => {
         const books = await Book.findAll();
         res.status(200).json(books);
     } catch (error) {
-        next(createError(500, "Error retrieving books", error.message));
+        next(createError(500, "Erreur lors de la récupération des livres", error.message));
     }
 };
