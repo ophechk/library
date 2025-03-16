@@ -12,12 +12,8 @@ exports.addComment = async (req, res, next) => {
         const { user_id, text } = req.body;
 
         // Validation des données requises
-        if (!user_id) {
-            return next(createError(400, "ID de l'utilisateur requis"));
-        }
-
-        if (!text) {
-           return next(createError(400, "Le texte du commentaire est requis"));
+        if (!text || !user_id) {
+           return next(createError(400, "Le texte du commentaire et l'ID de l'utilisateur sont requis"));
         }
 
         // Vérifier si le livre existe
