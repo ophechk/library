@@ -4,25 +4,32 @@ const express = require('express');
 const ENV = require('./config');
 const {db}= require('./models');
 
+
 const app = express();
+
+
+// port
+const PORT = ENV.PORT || 8000
+
 
 // importation des routes
 const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
 
+
 // Configuration du moteur de templates EJS
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 
-// port
-const PORT = ENV.PORT || 8000
 
 // middlewares
 app.use(express.json());
 
+
 // prefix
 app.use('/api/user', userRouter);
 app.use('/api/books', bookRouter);
+
 
 //middlewares de gestion d'erreurs
 app.use((err, req, res, next) => {
@@ -37,8 +44,8 @@ app.use((err, req, res, next) => {
     }});
 });
 
-// serveur
 
+// serveur
 const startServeur = async () => {
     try {
         await db.sync({ force: false }); //sert à synchroniser les modèles Sequelize à la bd en créant des tables si non existantes
