@@ -35,7 +35,7 @@ exports.signin = async (req, res, next) => {
         if (!comparePassword) return next(createError(400, "Identifiants incorrects"));
 
         // Génération du token
-        const token = jwt.sign({id: user.id}, ENV.TOKEN, {expiresIn : '24h'});
+        const token = jwt.sign({ id: user.id }, ENV.TOKEN, { expiresIn: '24h' });
 
         // On exclut le mdp du résultat user
         const { password, ...userData } = user.dataValues;
@@ -51,5 +51,14 @@ exports.signin = async (req, res, next) => {
             .json(userData)
     } catch (error) {
         next(createError(500, "Erreur lors de la connexion", error.message));
+    }
+}
+
+exports.getAllUsers = async (req, res, next) => {
+    try {
+        const users = await User.findAll();
+        res.status(200).json(users);
+    } catch (error) {
+        next(createError(500, "Erreur lors de la récupération", error.message));
     }
 }
