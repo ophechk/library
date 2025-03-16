@@ -2,7 +2,7 @@ console.log('Démarage du serveur...');
 
 const express = require('express');
 const ENV = require('./config');
-const {db}= require('./models');
+const {db, Book}= require('./models');
 
 
 const app = express();
@@ -17,10 +17,49 @@ const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
 
 
-// Configuration du moteur de templates EJS
+// mettre le view engine en ejs
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: true }));
 
+// utiliser res.render pour générer un fichier page en ejs
+
+// index page
+app.get('/', async (req, res) => {
+    try {
+        // Récupérer tous les livres depuis la base de données
+        const books = await Book.findAll();
+
+        // Rendre la vue 'index' et passer les livres à la vue
+        res.render('pages/index', { books });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erreur lors de la récupération des livres');
+    }
+});
+
+// Route pour afficher les détails d'un livre
+app.get('/books/:id', async (req, res) => {
+    try {
+        const book = await Book.findByPk(req.params.id); // Récupérer le livre par son ID
+        if (!book) {
+            return res.status(404).send('Livre non trouvé');
+        }
+
+        // Rendre la vue 'bookDetail' et passer les détails du livre
+        res.render('pages/bookDetail', { book });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erreur lors de la récupération des détails du livre');
+    }
+});
+
+// contact page
+app.get('/contact', function(req, res) {
+    res.render('pages/contact');
+});
+
+
+// Middleware pour analyser les corps codés en URL
+app.use(express.urlencoded({ extended: true }));
 
 // middlewares
 app.use(express.json());
