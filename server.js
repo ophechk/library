@@ -6,8 +6,12 @@ const {db}= require('./models');
 
 const app = express();
 
+// Configuration du moteur de templates EJS
+app.set('view engine', 'ejs');
+
 // importation des routes
 const userRouter = require('./router/user.router');
+const bookRouter = require('./router/book.router');
 
 // port
 const PORT = ENV.PORT || 8000
@@ -16,7 +20,7 @@ const PORT = ENV.PORT || 8000
 app.use(express.json());
 
 // prefix
-app.use('/api', userRouter);
+app.use('/api/user', userRouter);
 
 //middlewares de gestion d'erreurs
 app.use((err, req, res, next) => {
