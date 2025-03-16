@@ -27,7 +27,6 @@ Comment.belongsTo(Book, {
   foreignKey: 'book_id',
   as: 'book'  // Alias pour accéder au livre d'un commentaire
 });
-
 // Category <-> Book (Une catégorie peut avoir plusieurs livres)
 Category.hasMany(Book, { 
   foreignKey: 'category_id',

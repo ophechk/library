@@ -53,21 +53,23 @@ exports.addComment = async (req, res, next) => {
     }
 };
 
-// Afficher les détails d’un livre avec les commentaires associés
 exports.getBookDetails = async (req, res, next) => {
     try {
-        const book = await Book.findByPk(req.params.id);
-        if (!book) return next(createError(404, "Book not found"));
-
-        const comments = await Comment.findAll({ where: { book_id: book.id } });
-
-        res.status(200).json({
-            book,
-            comments
+        const book = await Book.findByPk(req.params.id, {
+            include: [{
+                model: Comment,
+                as: 'comments' // Utilise l'alias 'comments' que tu as défini dans la relation
+            }]
         });
 
+        if (!book) {
+            return next(createError(404, "Livre non trouvé"));
+        }
+
+        // Retourner le livre et ses commentaires
+        res.status(200).json({ book, comments: book.comments });
     } catch (error) {
-        next(createError(500, "Error retrieving book details", error.message));
+        next(createError(500, "Erreur lors de la récupération du livre", error.message));
     }
 };
 
