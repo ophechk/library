@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    is_verified BOOLEAN DEFAULT FALSE
+    is_active BOOLEAN DEFAULT TRUE, -- savoir si un compte est actif
+    is_verified BOOLEAN DEFAULT FALSE -- vérifier l'authentification de l'utilisateur
 );
 
 -- Création de la table des catégories
