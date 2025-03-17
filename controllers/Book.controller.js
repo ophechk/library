@@ -49,6 +49,8 @@ exports.addComment = async (req, res, next) => {
     }
 };
 
+
+// Détail d'un livre
 exports.getBookDetails = async (req, res, next) => {
     try {
         const book = await Book.findByPk(req.params.id, {
@@ -68,6 +70,7 @@ exports.getBookDetails = async (req, res, next) => {
         next(createError(500, "Erreur lors de la récupération du livre", error.message));
     }
 };
+
 
 // Afficher la liste des livres
 exports.getBooks = async (req, res, next) => {

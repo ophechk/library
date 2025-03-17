@@ -15,12 +15,14 @@ const PORT = ENV.PORT || 8000
 // importation des routes
 const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
+const authRouter = require('./router/auth.router');
 
 
 // mettre le view engine en ejs
 app.set('view engine', 'ejs');
 
 // utiliser res.render pour générer un fichier page en ejs
+app.use('/', authRouter); // Pour gérer les pages login, register et contact
 
 // index page
 app.get('/', async (req, res) => {
@@ -51,12 +53,6 @@ app.get('/books/:id', async (req, res) => {
         res.status(500).send('Erreur lors de la récupération des détails du livre');
     }
 });
-
-// contact page
-app.get('/contact', function(req, res) {
-    res.render('pages/contact');
-});
-
 
 // Middleware pour analyser les corps codés en URL
 app.use(express.urlencoded({ extended: true }));
