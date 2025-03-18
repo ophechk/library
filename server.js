@@ -1,4 +1,4 @@
-console.log('Démarage du serveur...');
+console.log('Démmarage du serveur...');
 
 const express = require('express');
 const ENV = require('./config');
