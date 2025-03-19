@@ -1,29 +1,50 @@
-console.log('Démmarage du serveur...');
+console.log('🚀 Démarrage du serveur...');
 
-const express = require('express');
+const express = require('express')
 const ENV = require('./config');
-const {db, Book}= require('./models');
+const { db, Book } = require('./models');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 
-const app = express();
+const app = express()
 
-
-// port
-const PORT = ENV.PORT || 8000
-
-
-// importation des routes
+// IMPORTATIONS DES ROUTES
 const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
-const authRouter = require('./router/auth.router');
+
+// PORT
+const PORT = ENV.PORT || 8080
+
+// MIDDLEWARE
+app.use(express.json())
+app.use(cors())
+app.use(cookieParser())
+// Middleware pour analyser les corps codés en URL
+app.use(express.urlencoded({ extended: true }));
 
 
 // mettre le view engine en ejs
 app.set('view engine', 'ejs');
 
-// utiliser res.render pour générer un fichier page en ejs
-app.use('/', authRouter); // Pour gérer les pages login, register et contact
+// PREFIX
+app.use('/api/user', userRouter);
+app.use('/api/book', bookRouter);
 
+
+// MIDDLEWARE DE GESTION D'ERREURS
+app.use((err, req, res, next) => {
+    const status = err.status || 500;
+    const message = err.message || "Une erreur est survenue.";
+    const details = err.details || null;
+  
+    res.status(status).json({ error : {
+      status,
+      message,
+      details
+    }})
+  })
+  
 // index page
 app.get('/', async (req, res) => {
     try {
@@ -54,46 +75,23 @@ app.get('/books/:id', async (req, res) => {
     }
 });
 
-// Middleware pour analyser les corps codés en URL
-app.use(express.urlencoded({ extended: true }));
 
-// middlewares
-app.use(express.json());
-
-
-// prefix
-app.use('/api/user', userRouter);
-app.use('/api/books', bookRouter);
-
-
-//middlewares de gestion d'erreurs
-app.use((err, req, res, next) => {
-    const status = err.status || 500;
-    const message = err.message || "Une erreur est survenue";
-    const details = err.details || null;
-
-    res.status(status).json({error: {
-        status,
-        message,
-        details
-    }});
-});
-
-
-// serveur
-const startServeur = async () => {
-    try {
-        await db.sync({ force: false }); //sert à synchroniser les modèles Sequelize à la bd en créant des tables si non existantes
-        console.log('La base de données est synchronisée avec succès !');
-        
-        app.listen(PORT, () => {
-            console.log(`Serveur en écoute sur le port ${PORT}`);
-        });
-    } catch (error) {
-        console.log('Erreur de synchronisation à la base de données : ', error.message);
+// SERVEUR
+const startServer = async () => {
+    try{
+      await db.sync({ force: false })
+      console.log('✅ Database synced successfully !')
+  
+      app.listen(PORT, () => {
+        console.log(`🚀 server running on http://localhost:${PORT}`);
+      })
+    }catch(error){
+     console.error(`❌ Error syncing database : `, error.message);
+      
     }
-}
+  }
+  
+  startServer();
 
-startServeur(); // appeler la fonction
 
 

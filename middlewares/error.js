@@ -1,10 +1,8 @@
-// centraliser les erreurs
+const createError = (status, message, details = null) => {
+  const error = new Error(message)
+  error.status = status
+  error.details = details
+  return error
+} 
 
-function createError(statusCode, message, details = null) {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  if (details) error.details = details;
-  return error;
-}
-
-module.exports = createError; // Export the function itself
+module.exports = createError

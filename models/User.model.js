@@ -10,29 +10,26 @@ const User = db.define('Users', {
         primaryKey: true
     },
     role: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING,
         allowNull: false,
         defaultValue: 'user',
         validate: {
-            isIn: [['admin', 'user']]
+            isIn: [['user', 'admin']]
         }
     },
     name: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING,
         allowNull: false
     },
     email: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-        unique: true,
-        validate: {
-            isEmail: true
-        }
-    },
-    password: {
-        type: DataTypes.STRING(255),
-        allowNull: false
-    },
+        type: DataTypes.STRING,
+        allowNull: false, // le champ est requis
+        unique: true
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false, // le champ est requis
+      },
     registration_date: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
@@ -49,7 +46,7 @@ const User = db.define('Users', {
     }
 }, {
     tableName: 'users',
-    timeStamps: false, // ajoute date création et modification
+    timesTemps: true, // ajoute date création et modification
     underscored: true // mets des undescores pour les mots composés (snakeCase)
 });
 
