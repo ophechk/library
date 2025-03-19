@@ -7,7 +7,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-
 const app = express()
 
 // Au début de votre fichier, après avoir initialisé l'app
@@ -34,6 +33,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware pour les fichiers statiques (CSS, JS, images)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 
 // PREFIX
