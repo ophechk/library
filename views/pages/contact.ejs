@@ -10,21 +10,26 @@
     <%- include('../partials/header'); %>
 
         <br>
-        <h1>Contact</h1>
-        <form action="/contact" method="POST">
-        
-            <label for="email">Email :</label>
-            <input type="email" name="email" required>
-        
-            <label for="password">Mot de passe :</label>
-            <input type="password" name="password" required>
+        <h1>Contactez-nous</h1>
 
-            <label for="message">Message :</label>
-            <input type="textarea" name="textarea">
-        
-            <button type="submit">Inscription</button>
+        <form action="/contact/submit" method="POST">
+            <div>
+                <label for="name">Nom :</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div>
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="message">Message :</label>
+                <textarea id="message" name="message" required></textarea>
+            </div>
+
+            <button type="submit">Envoyer</button>
         </form>
-        <br>
 
 </body>
 

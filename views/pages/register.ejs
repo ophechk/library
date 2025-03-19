@@ -10,22 +10,43 @@
     <%- include('../partials/header'); %>
 
         <br>
-        <h1>Register</h1>
-        <form action="/register" method="POST">
-            
-            <label for="username">Nom d'utilisateur :</label>
-            <input type="text" name="username" required>
-        
-            <label for="email">Email :</label>
-            <input type="email" name="email" required>
-        
-            <label for="password">Mot de passe :</label>
-            <input type="password" name="password" required>
-        
-            <button type="submit">Inscription</button>
-        </form>
-        
-        <br>
+        <main>
+            <h1>Inscription</h1>
+
+            <% if (locals.error) { %>
+                <div class="error-message">
+                    <%= error %>
+                </div>
+                <% } %>
+
+                    <form action="/register" method="POST">
+                        <div>
+                            <label for="name">Nom complet :</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+
+                        <div>
+                            <label for="email">Email :</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div>
+                            <label for="password">Mot de passe :</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+
+                        <div>
+                            <label for="confirm-password">Confirmer le mot de passe :</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" required>
+                        </div>
+
+                        <button type="submit">S'inscrire</button>
+                    </form>
+
+                    <p>Vous avez déjà un compte ? <a href="/login">Se connecter</a></p>
+        </main>
+
+        <%- include('../partials/footer') %>
 
 </body>
 

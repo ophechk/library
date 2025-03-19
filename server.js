@@ -5,9 +5,13 @@ const ENV = require('./config');
 const { db, Book } = require('./models');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 
 const app = express()
+
+// Au début de votre fichier, après avoir initialisé l'app
+app.use(express.urlencoded({ extended: true }));
 
 // IMPORTATIONS DES ROUTES
 const userRouter = require('./router/user.router');
@@ -24,8 +28,13 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
 
 
-// mettre le view engine en ejs
+// Configuration de EJS comme moteur de template
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Middleware pour les fichiers statiques (CSS, JS, images)
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // PREFIX
 app.use('/api/user', userRouter);
@@ -44,7 +53,8 @@ app.use((err, req, res, next) => {
       details
     }})
   })
-  
+
+// ROUTES PAGES
 // index page
 app.get('/', async (req, res) => {
     try {
@@ -73,6 +83,88 @@ app.get('/books/:id', async (req, res) => {
         console.error(error);
         res.status(500).send('Erreur lors de la récupération des détails du livre');
     }
+});
+
+// Route pour afficher le formulaire de contact
+app.get('/contact', (req, res) => {
+  res.render('pages/contact', { 
+      title: 'Contact',
+      // Autres variables à passer au template
+  });
+});
+
+// Si vous voulez gérer la soumission du formulaire (optionnel)
+app.post('/contact/submit', (req, res) => {
+  // N'oubliez pas d'ajouter express.urlencoded() middleware pour parser les données du formulaire
+  const { name, email, message } = req.body;
+  
+  // Traitement des données du formulaire
+  // Envoyer un email, sauvegarder en base de données, etc.
+  
+  // Rediriger ou afficher un message de confirmation
+  res.redirect('/contact?success=true');
+});
+
+// Routes pour l'authentification
+// Affichage des formulaires
+app.get('/login', (req, res) => {
+  res.render('pages/login', { 
+      title: 'Connexion'
+  });
+});
+
+app.get('/register', (req, res) => {
+  res.render('pages/register', { 
+      title: 'Inscription'
+  });
+});
+
+// Traitement des formulaires
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  // Ici, vous devrez implémenter la logique d'authentification
+  // Vérification de l'email et du mot de passe dans la base de données
+  // Utilisation de bcrypt pour comparer les mots de passe, etc.
+  
+  // Exemple simplifié :
+  if (email === 'user@example.com' && password === 'password') {
+      // Créez une session ou un JWT
+      // req.session.userId = user.id; // Si vous utilisez express-session
+      
+      res.redirect('/dashboard'); // Redirection après connexion réussie
+  } else {
+      res.render('pages/login', {
+          title: 'Connexion',
+          error: 'Email ou mot de passe incorrect',
+          email: email
+      });
+  }
+});
+
+app.post('/register', (req, res) => {
+  const { name, email, password, confirmPassword } = req.body;
+  
+  // Validation
+  if (password !== confirmPassword) {
+      return res.render('pages/register', {
+          title: 'Inscription',
+          error: 'Les mots de passe ne correspondent pas',
+          name: name,
+          email: email
+      });
+  }
+  
+  // Vérifiez si l'email existe déjà dans la base de données
+  
+  // Hashage du mot de passe avec bcrypt
+  // Création de l'utilisateur dans la base de données
+  
+  // Exemple simplifié :
+  // const hashedPassword = await bcrypt.hash(password, 10);
+  // await User.create({ name, email, password: hashedPassword });
+  
+  res.redirect('/login?registered=true');
 });
 
 
