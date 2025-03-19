@@ -109,7 +109,7 @@ app.post('/contact/submit', (req, res) => {
 // Affichage des formulaires
 app.get('/login', (req, res) => {
   res.render('pages/login', { 
-      title: 'Connexion'
+      title: 'Connexion',
   });
 });
 
