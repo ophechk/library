@@ -110,12 +110,14 @@ app.post('/contact/submit', (req, res) => {
 app.get('/login', (req, res) => {
   res.render('pages/login', { 
       title: 'Connexion',
+      page: 'login'
   });
 });
 
 app.get('/register', (req, res) => {
   res.render('pages/register', { 
-      title: 'Inscription'
+      title: 'Inscription',
+      page: 'register'
   });
 });
 
