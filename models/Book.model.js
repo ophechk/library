@@ -19,6 +19,14 @@ const Book = db.define('Books', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    year_publication : {
+        type: DataTypes.INTEGER,
+        allowNull : false
+    },
+    imgPath : {
+        type: DataTypes.STRING(255),
+        allowNull: false
+    },
     category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

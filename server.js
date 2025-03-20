@@ -208,7 +208,7 @@ app.post('/register', async (req, res) => {
 // SERVEUR
 const startServer = async () => {
     try{
-      await db.sync({ force: false })
+      await db.sync({ force: true })
       console.log('✅ Database synced successfully !')
   
       app.listen(PORT, () => {
