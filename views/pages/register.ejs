@@ -7,6 +7,101 @@
 
 <body>
 
+    <style>
+        @font-face {
+            font-family: 'Goundy';
+            src: url('/fonts/Goundy.ttf') format('truetype');
+            /* Assurez-vous que ce chemin est correct et que le fichier existe dans votre dossier public/fonts */
+        }
+       
+        body {
+            font-family: 'Goundy', serif;
+            background-color: #ffffff;
+            color: #22577a;
+        }
+       
+        main {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #c7f9cc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+       
+        .title {
+            color: #22577a;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+       
+        form div {
+            margin-bottom: 1.5rem;
+        }
+       
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #38a3a5;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+       
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #57cc99;
+            border-radius: 5px;
+            font-family: 'Goundy', serif;
+            font-size: 1rem;
+            background-color: #ffffff;
+            color: #22577a;
+            transition: all 0.3s ease;
+        }
+       
+        input:focus {
+            outline: none;
+            border-color: #38a3a5;
+            box-shadow: 0 0 0 3px rgba(56, 163, 165, 0.3);
+        }
+       
+        button {
+            background-color: #38a3a5;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Goundy', serif;
+            font-size: 1.2rem;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+       
+        button:hover {
+            background-color: #22577a;
+        }
+       
+        .error-message {
+            background-color: #ff6b6b;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+       
+        .success-message {
+            background-color: #57cc99;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+    </style>
+
     <%- include('../partials/header'); %>
 
         <br>

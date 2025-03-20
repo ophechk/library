@@ -43,7 +43,7 @@ exports.getBookDetails = async (req, res, next) => {
         const book = await Book.findByPk(req.params.id, {
             include: [{
                 model: Comment,
-                as: 'comments' // Alias défini dans la relation Book-Comment
+                as: 'comments'
             }]
         });
 
@@ -51,19 +51,20 @@ exports.getBookDetails = async (req, res, next) => {
             return next(createError(404, "Livre non trouvé"));
         }
 
-        // Assurez-vous que img_path est bien défini dans book
-        const imagePath = book.img_path;  // L'URL de l'image dans la base de données
+        // Récupérer le chemin de l'image depuis la base de données
+        const imagePath = book.img_path;  // On suppose que book.img_path contient le chemin relatif
 
-        // Passer le livre et l'image à la vue
+        // Transmettre book et imagePath à la vue
         res.render('pages/bookDetail', {
-            book, 
-            comments: book.comments, 
-            imagePath  // Passer imagePath dans la vue
+            book,
+            comments: book.comments,
+            imagePath // On passe imagePath à la vue
         });
     } catch (error) {
         next(createError(500, "Erreur lors de la récupération du livre", error.message));
     }
 };
+
 
 
 
