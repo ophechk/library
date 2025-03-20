@@ -37,10 +37,8 @@ h1 {
 
 .box {
     flex: 1; /* Chaque colonne prend une part égale */
-    background-color: #4CAF50;
     padding: 40px 60px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
     color: white;
 }
@@ -52,11 +50,10 @@ ul {
 
 li {
     background-color: #ffffff;
-    color: #4CAF50;
+    color: black;
     padding: 10px 15px;
     margin: 10px 0;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 nav {
@@ -72,10 +69,4 @@ nav a {
     color: white;
 }
 
-footer {
-    text-align: center;
-    padding: 10px 0;
-    background-color: #333;
-    color: #fff;
-    width: 100%;
-}
+
