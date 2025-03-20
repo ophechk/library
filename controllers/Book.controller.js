@@ -5,46 +5,33 @@ const jwt = require('jsonwebtoken');
 const ENV = require('../config');
 
 
-// Ajouter un commentaire à un livre
 exports.addComment = async (req, res, next) => {
+    console.log("Données reçues :", req.body);
     try {
-        const book_id = req.params.id; // ID du livre depuis les paramètres de l'URL
-        const { user_id, text } = req.body;
-
-        // Validation des données requises
-        if (!text || !user_id) {
-           return next(createError(400, "Le texte du commentaire et l'ID de l'utilisateur sont requis"));
-        }
-
-        // Vérifier si le livre existe
-        const book = await Book.findByPk(book_id);
+        const book = await Book.findByPk(req.params.id);
         if (!book) {
+            console.log("Livre non trouvé");
             return next(createError(404, "Livre non trouvé"));
         }
 
-        // Vérifier si l'utilisateur existe
-        const user = await User.findByPk(user_id);
+        const user = await User.findByPk(req.body.user_id);
         if (!user) {
+            console.log("Utilisateur non trouvé");
             return next(createError(404, "Utilisateur non trouvé"));
         }
 
-        // Créer le commentaire
-        // Remarque : Pas besoin de vérifier l'existence d'un commentaire précédent
-        // car la clé primaire inclut comment_date qui sera différente à chaque fois
-        const comment_date = new Date(); // Date actuelle
-
+        console.log("Création du commentaire...");
         const newComment = await Comment.create({
-            text,
-            user_id,
-            book_id,
-            comment_date
+            text: req.body.text,
+            user_id: req.body.user_id,
+            book_id: req.params.id,
+            comment_date: new Date()
         });
 
-        res.status(201).json({
-            message: "Commentaire ajouté avec succès",
-            comment: newComment
-        });
+        console.log("Commentaire ajouté :", newComment);
+        res.status(201).json({ message: "Commentaire ajouté avec succès", comment: newComment });
     } catch (error) {
+        console.error("Erreur lors de l'ajout :", error);
         next(createError(500, "Erreur lors de l'ajout du commentaire", error.message));
     }
 };

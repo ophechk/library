@@ -46,7 +46,7 @@ const User = db.define('Users', {
     }
 }, {
     tableName: 'users',
-    timesTemps: true, // ajoute date création et modification
+    timeStamps: true, // ajoute date création et modification
     underscored: true // mets des undescores pour les mots composés (snakeCase)
 });
 

@@ -19,10 +19,6 @@ const Book = db.define('Books', {
         type: DataTypes.TEXT,
         allowNull: true
     },
-    imagePath: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
     category_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -36,5 +32,7 @@ const Book = db.define('Books', {
     timestamps: false, // Désactive createdAt et updatedAt
     underscored: true // mets des undescores pour les mots composés (snakeCase)
 });
+
+
 
 module.exports = Book;

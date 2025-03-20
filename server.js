@@ -2,15 +2,15 @@ console.log('🚀 Démarrage du serveur...');
 
 const express = require('express')
 const ENV = require('./config');
-const { db, Book } = require('./models');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-const app = express()
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { db, Book, User } = require('./models');
 
-// Au début de votre fichier, après avoir initialisé l'app
-app.use(express.urlencoded({ extended: true }));
+const app = express()
 
 // IMPORTATIONS DES ROUTES
 const userRouter = require('./router/user.router');
@@ -26,7 +26,6 @@ app.use(cookieParser())
 // Middleware pour analyser les corps codés en URL
 app.use(express.urlencoded({ extended: true }));
 
-
 // Configuration de EJS comme moteur de template
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -35,11 +34,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
-
 // PREFIX
 app.use('/api/user', userRouter);
 app.use('/api/book', bookRouter);
-
 
 // MIDDLEWARE DE GESTION D'ERREURS
 app.use((err, req, res, next) => {
@@ -52,7 +49,7 @@ app.use((err, req, res, next) => {
       message,
       details
     }})
-  })
+})
 
 // ROUTES PAGES
 // index page
@@ -109,6 +106,7 @@ app.post('/contact/submit', (req, res) => {
 // Affichage des formulaires
 app.get('/login', (req, res) => {
   res.render('pages/login', { 
+      query: req.query,
       title: 'Connexion',
       page: 'login'
   });
@@ -122,53 +120,90 @@ app.get('/register', (req, res) => {
 });
 
 // Traitement des formulaires
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  
-  // Ici, vous devrez implémenter la logique d'authentification
-  // Vérification de l'email et du mot de passe dans la base de données
-  // Utilisation de bcrypt pour comparer les mots de passe, etc.
-  
-  // Exemple simplifié :
-  if (email === 'user@example.com' && password === 'password') {
-      // Créez une session ou un JWT
-      // req.session.userId = user.id; // Si vous utilisez express-session
-      
-      res.redirect('/dashboard'); // Redirection après connexion réussie
-  } else {
-      res.render('pages/login', {
-          title: 'Connexion',
-          error: 'Email ou mot de passe incorrect',
-          email: email
+app.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Trouver l'utilisateur par email
+    const user = await User.findOne({ where: { email } });
+    
+    if (!user) {
+      return res.render('pages/login', {
+        title: 'Connexion',
+        error: 'Email ou mot de passe incorrect',
+        email
       });
+    }
+    
+    // Vérifier le mot de passe
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return res.render('pages/login', {
+        title: 'Connexion',
+        error: 'Email ou mot de passe incorrect',
+        email
+      });
+    }
+    
+    // Génération du Token d'authentification
+    const token = jwt.sign({ id: user.id }, ENV.TOKEN, { expiresIn: '24h' });
+    
+    // Création du cookie
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false, // à mettre à true pour HTTPS
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000 // 24 heures
+    });
+    
+    // Redirection après connexion réussie
+    return res.redirect('/');
+  } catch (error) {
+    console.error(error);
+    res.render('pages/login', {
+      title: 'Connexion',
+      error: 'Une erreur est survenue lors de la connexion',
+      email: req.body.email
+    });
   }
 });
 
-app.post('/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
-  
-  // Validation
-  if (password !== confirmPassword) {
+app.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, confirmPassword } = req.body;
+    
+    // Validation
+    if (password !== confirmPassword) {
       return res.render('pages/register', {
-          title: 'Inscription',
-          error: 'Les mots de passe ne correspondent pas',
-          name: name,
-          email: email
+        title: 'Inscription',
+        error: 'Les mots de passe ne correspondent pas',
+        name: name,
+        email: email
       });
+    }
+    
+    // Hashage du mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Création de l'utilisateur
+    await User.create({
+      name,
+      email,
+      password: hashedPassword
+    });
+    
+    res.redirect('/login?registered=true');
+  } catch (error) {
+    console.error(error);
+    res.render('pages/register', {
+      title: 'Inscription',
+      error: 'Erreur lors de l\'inscription: ' + error.message,
+      name: req.body.name,
+      email: req.body.email
+    });
   }
-  
-  // Vérifiez si l'email existe déjà dans la base de données
-  
-  // Hashage du mot de passe avec bcrypt
-  // Création de l'utilisateur dans la base de données
-  
-  // Exemple simplifié :
-  // const hashedPassword = await bcrypt.hash(password, 10);
-  // await User.create({ name, email, password: hashedPassword });
-  
-  res.redirect('/login?registered=true');
 });
-
 
 // SERVEUR
 const startServer = async () => {
@@ -183,9 +218,6 @@ const startServer = async () => {
      console.error(`❌ Error syncing database : `, error.message);
       
     }
-  }
+}
   
-  startServer();
-
-
-
+startServer();

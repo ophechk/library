@@ -22,8 +22,7 @@ const Comment = db.define('Comment', {
     },
     comment_date: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        primaryKey: true
+        defaultValue: DataTypes.NOW
     },
     text: {
         type: DataTypes.TEXT,

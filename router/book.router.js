@@ -2,10 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/Book.controller');
 
-router.get('/', bookController.getBooks);
-router.get('/:id', bookController.getBookDetails);
-router.post('/:id/comment', bookController.addComment);
+router.get('/', bookController.getBooks); // Récupérer tous les livres
+router.get('/:id', bookController.getBookDetails); // Récupérer les détails d'un livre
 
 module.exports = router;
-
-
