@@ -5,30 +5,59 @@
     font-weight: 400;
     margin: 0;
     padding: 0;
+    box-sizing: border-box; /* Empêche les débordements inattendus */
+}
+
+html, body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Hauteur minimale à 100vh pour que le footer reste en bas */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
     text-align: center;
 }
 
-div.div-book {
+.div-book {
+    flex: 1; /* Prend l'espace disponible pour que le footer se place correctement en bas */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    flex-direction: column;
     background-color: #f0f0f0;
 }
 
+.container {
+    display: flex;
+    gap: 20px; /* Espace entre les colonnes */
+    margin-top: 60px; /* Pour éviter le chevauchement avec la barre de navigation */
+}
+
 .box {
+    flex: 1; /* Chaque colonne prend une part égale */
     background-color: #4CAF50;
-    /* Couleur de la box */
     padding: 40px 60px;
     border-radius: 12px;
-    /* Coins arrondis */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    /* Ombre douce */
     text-align: center;
     color: white;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: #ffffff;
+    color: #4CAF50;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 nav {
@@ -42,4 +71,12 @@ nav a {
     text-decoration: none;
     font-weight: bold;
     color: white;
+}
+
+footer {
+    text-align: center;
+    padding: 10px 0;
+    background-color: #333;
+    color: #fff;
+    width: 100%;
 }

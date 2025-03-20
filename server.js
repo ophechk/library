@@ -66,6 +66,19 @@ app.get('/', async (req, res) => {
     }
 });
 
+app.get('/books', async (req, res) => {
+  try {
+      // Récupérer tous les livres depuis la base de données
+      const books = await Book.findAll();
+
+      // Rendre la vue 'index' et passer les livres à la vue
+      res.render('pages/books', { books });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Erreur lors de la récupération des livres');
+  }
+});
+
 // Route pour afficher les détails d'un livre
 app.get('/books/:id', async (req, res) => {
     try {
@@ -208,7 +221,7 @@ app.post('/register', async (req, res) => {
 // SERVEUR
 const startServer = async () => {
     try{
-      await db.sync({ force: true })
+      await db.sync({ force: false })
       console.log('✅ Database synced successfully !')
   
       app.listen(PORT, () => {

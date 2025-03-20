@@ -11,36 +11,13 @@
 
         <br>
         <br>
-        <h1 class="title">Liste des livres</h1>
+        <h1 class="title">Accueil</h1>
         <br>
         <br>
 
-        <div class="div-book">
-            <div class="box">
-                <!-- Vérifier s'il y a des livres -->
-                <% if (books && books.length> 0) { %>
-                    <ul>
-                        <!-- Boucle pour afficher chaque livre -->
-                        <% books.forEach(book=> { %>
-                            <li>
-                                <h2>
-                                    <%= book.title %>
-                                </h2>
-                                <p>Auteur : <%= book.author %>
-                                </p>
-                                <br>
-
-                                <!-- Lien pour voir les détails du livre -->
-                                <a href="/books/<%= book.id %>">
-                                    <button>Voir les détails</button>
-                                </a>
-                            </li>
-                            <% }) %>
-                    </ul>
-                    <% } else { %>
-                        <p>Aucun livre disponible</p>
-                        <% } %>
-
+        <div class="home">
+            <div class="box2">
+                
             </div>
         </div>
 
