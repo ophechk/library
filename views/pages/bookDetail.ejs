@@ -6,19 +6,31 @@
 </head>
 
 <body>
+
     <%- include('../partials/header'); %>
+
+        <br>
 
         <br>
 
         <h1 class="title">
             <%= book.title %>
         </h1>
+        <br>
+        <br>
         <p>Auteur : <%= book.author %>
         </p>
+        <br>
         <p>Description : <%= book.description %>
         </p>
-        <p>Description : <%= book.imagePath %>
         <br>
+        <p>Date de publication : <%= book.year_publication %>
+        </p>
+        <br>
+        <br>
+
 </body>
+
+<%- include('../partials/footer'); %>
 
 </html>

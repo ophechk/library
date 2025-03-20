@@ -34,6 +34,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'));
 
+
+
 // PREFIX
 app.use('/api/user', userRouter);
 app.use('/api/book', bookRouter);
@@ -78,6 +80,12 @@ app.get('/books', async (req, res) => {
       res.status(500).send('Erreur lors de la récupération des livres');
   }
 });
+
+// Route vers la page du livre
+app.get('/book/:id', (req, res) => {
+  res.render('bookDetail', { bookId: req.params.id });
+});
+
 
 // Route pour afficher les détails d'un livre
 app.get('/books/:id', async (req, res) => {
