@@ -69,4 +69,19 @@ nav a {
     color: white;
 }
 
+/* Style de la box */
+.box {
+    background-color: white;
+    border: 2px solid #16a085 ;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 900px; /* Augmentation de la largeur */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    color: black;
+}
+
+.box h2{
+    padding-top: 72px;
+}
 
