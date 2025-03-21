@@ -57,4 +57,33 @@ exports.getAllUsers = async (req, res, next) => {
   }catch(error){
     next(createError(500, "Erreur lors de la récupération", error.message))
   }
-}
+};
+
+// Vérifier si l'utilisateur est connecté
+exports.checkAuth = async (req, res, next) => {
+  try {
+    // Si l'utilisateur arrive ici, c'est que le middleware auth a validé son token
+    // On exclut le mot de passe du résultat user
+    const { password, ...userData } = req.user.dataValues;
+    
+    res.status(200).json({
+      isAuthenticated: true,
+      user: userData
+    });
+  } catch (error) {
+    next(createError(500, "Erreur lors de la vérification d'authentification", error.message));
+  }
+};
+
+// Déconnexion
+exports.signout = async (req, res, next) => {
+  try {
+    // Supprimer le cookie d'authentification
+    res.clearCookie('access_token')
+      .status(200)
+      .json({ message: "Déconnexion réussie" });
+  } catch (error) {
+    next(createError(500, "Erreur lors de la déconnexion", error.message));
+  }
+};
+

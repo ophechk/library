@@ -32,7 +32,7 @@ h1 {
 .container {
     display: flex;
     gap: 20px; /* Espace entre les colonnes */
-    margin-top: 60px; /* Pour éviter le chevauchement avec la barre de navigation */
+    margin-top: 20px; /* Pour éviter le chevauchement avec la barre de navigation */
 }
 
 .box {
