@@ -17,7 +17,7 @@ const bookRouter = require('./router/book.router');
 const authRouter = require('./router/auth.router');
 
 // PORT
-const PORT = ENV.PORT || 8080;
+const PORT = ENV.PORT || 8000;
 
 // MIDDLEWARE
 app.use(express.json());
@@ -32,6 +32,8 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware pour les fichiers statiques (CSS, JS, images)
 app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 // Middleware d'authentification - à ajouter après vos autres middlewares
 const isAuthenticated = (req, res, next) => {
@@ -57,6 +59,8 @@ const isAuthenticated = (req, res, next) => {
       return res.redirect('/login?error=invalid_token');
     }
   };
+
+
   
   // Middleware pour vérifier si l'utilisateur est connecté (sans bloquer l'accès)
   const checkAuthStatus = (req, res, next) => {
@@ -75,6 +79,8 @@ const isAuthenticated = (req, res, next) => {
     }
     next();
   };
+
+
   
   // Appliquer le middleware de vérification à toutes les routes
   app.use(checkAuthStatus);
@@ -109,7 +115,6 @@ app.use('/api/auth', authRouter);
 
 // ROUTES PAGES
 // index page
-// Exemple pour la page d'accueil
 app.get('/', async (req, res) => {
     try {
         // Récupérer tous les livres depuis la base de données
@@ -131,6 +136,13 @@ app.get('/books', async (req, res) => {
         // Récupérer tous les livres depuis la base de données
         const books = await Book.findAll();
 
+        // Passer isAuthenticated à la vue
+        res.render('pages/books', { 
+            books,
+            isAuthenticated: req.isAuthenticated,
+            user: req.user // Optionnel, si vous avez besoin des infos utilisateur
+        });
+
         // Rendre la vue 'index' et passer les livres à la vue
         res.render('pages/books', { books });
     } catch (error) {
@@ -138,6 +150,7 @@ app.get('/books', async (req, res) => {
         res.status(500).send('Erreur lors de la récupération des livres');
     }
 });
+
 
 // Doublons consolidés en une seule route pour les détails d'un livre
 app.get('/books/:id', async (req, res) => {
@@ -147,6 +160,13 @@ app.get('/books/:id', async (req, res) => {
             return res.status(404).send('Livre non trouvé');
         }
 
+        // Passer isAuthenticated à la vue
+        res.render('pages/bookDetail', { 
+            book,
+            isAuthenticated: req.isAuthenticated,
+            user: req.user
+        });
+
         // Rendre la vue 'bookDetail' et passer les détails du livre
         res.render('pages/bookDetail', { book });
     } catch (error) {
@@ -154,6 +174,7 @@ app.get('/books/:id', async (req, res) => {
         res.status(500).send('Erreur lors de la récupération des détails du livre');
     }
 });
+
 
 app.get('/gallery', (req, res) => {
     // Exemple de données d'images
@@ -170,15 +191,18 @@ app.get('/gallery', (req, res) => {
         { src: '/images/PotionMagique.jpg', caption: 'George et la potion magique' },
         { src: '/images/SacreesSorcieres.jpg', caption: 'Sacrées Sorcières' }
     ];
-    
-    res.render('gallery', { images: images });
+    res.render('gallery', { 
+        images: images,
+        isAuthenticated: req.isAuthenticated,
+        user: req.user
+    });
 });
 
-// Route pour afficher le formulaire de contact
 app.get('/contact', (req, res) => {
     res.render('pages/contact', { 
         title: 'Contact',
-        // Autres variables à passer au template
+        isAuthenticated: req.isAuthenticated,
+        user: req.user
     });
 });
 
@@ -216,7 +240,6 @@ app.get('/logout', (req, res) => {
     res.clearCookie('access_token');
     res.redirect('/login?logout=true');
   });
-
 
 // Traitement des formulaires
 app.post('/login', async (req, res) => {
@@ -302,6 +325,13 @@ app.post('/register', async (req, res) => {
             email: req.body.email
         });
     }
+});
+
+// Middleware pour rendre isAuthenticated disponible dans toutes les vues
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.isAuthenticated;
+    res.locals.user = req.user;
+    next();
 });
 
 // La fonction checkIfLoggedIn ne doit pas être dans ce fichier serveur
