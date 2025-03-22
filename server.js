@@ -32,7 +32,75 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware pour les fichiers statiques (CSS, JS, images)
 app.use(express.static(path.join(__dirname, 'public')));
-// Le doublon suivant a été supprimé: app.use(express.static('public'));
+
+// Middleware d'authentification - à ajouter après vos autres middlewares
+const isAuthenticated = (req, res, next) => {
+    try {
+      // Récupérer le token depuis les cookies
+      const token = req.cookies.access_token;
+      
+      if (!token) {
+        return res.redirect('/login?error=not_authenticated');
+      }
+      
+      // Vérifier et décoder le token
+      const decoded = jwt.verify(token, ENV.TOKEN);
+      
+      // Ajouter les informations de l'utilisateur à l'objet request
+      req.userId = decoded.id;
+      
+      // Continuer vers la route protégée
+      next();
+    } catch (error) {
+      console.error('Erreur d\'authentification:', error);
+      res.clearCookie('access_token');
+      return res.redirect('/login?error=invalid_token');
+    }
+  };
+  
+  // Middleware pour vérifier si l'utilisateur est connecté (sans bloquer l'accès)
+  const checkAuthStatus = (req, res, next) => {
+    try {
+      const token = req.cookies.access_token;
+      if (token) {
+        const decoded = jwt.verify(token, ENV.TOKEN);
+        req.userId = decoded.id;
+        req.isAuthenticated = true;
+      } else {
+        req.isAuthenticated = false;
+      }
+    } catch (error) {
+      req.isAuthenticated = false;
+      res.clearCookie('access_token');
+    }
+    next();
+  };
+  
+  // Appliquer le middleware de vérification à toutes les routes
+  app.use(checkAuthStatus);
+
+  // Route protégée
+app.get('/dashboard', isAuthenticated, async (req, res) => {
+    try {
+      // Récupérer les informations de l'utilisateur
+      const user = await User.findByPk(req.userId);
+      
+      if (!user) {
+        // L'utilisateur n'existe plus dans la base de données
+        res.clearCookie('access_token');
+        return res.redirect('/login?error=user_not_found');
+      }
+      
+      res.render('pages/dashboard', { 
+        title: 'Tableau de bord',
+        user
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Erreur lors du chargement du tableau de bord');
+    }
+  });
+
 
 // PREFIX
 app.use('/api/user', userRouter);
@@ -41,13 +109,17 @@ app.use('/api/auth', authRouter);
 
 // ROUTES PAGES
 // index page
+// Exemple pour la page d'accueil
 app.get('/', async (req, res) => {
     try {
         // Récupérer tous les livres depuis la base de données
         const books = await Book.findAll();
 
         // Rendre la vue 'index' et passer les livres à la vue
-        res.render('pages/index', { books });
+        res.render('pages/index', { 
+            books,
+            isAuthenticated: req.isAuthenticated
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send('Erreur lors de la récupération des livres');
@@ -138,6 +210,13 @@ app.get('/register', (req, res) => {
         page: 'register'
     });
 });
+
+// Route pour se déconnecter
+app.get('/logout', (req, res) => {
+    res.clearCookie('access_token');
+    res.redirect('/login?logout=true');
+  });
+
 
 // Traitement des formulaires
 app.post('/login', async (req, res) => {
@@ -240,6 +319,7 @@ app.use((err, req, res, next) => {
       details
     }});
 });
+
 
 // SERVEUR
 const startServer = async () => {

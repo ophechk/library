@@ -3,10 +3,17 @@
 
 <nav>
     <a href="/">Accueil</a>
-    <a href="/books">Livres</a>
-    <a href="/gallery">Galerie des couvertures</a>
-    <a href="/login">Connexion</a>
-    <a href="/register">Inscription</a>
-    <a href="/contact">Contact</a>
+    <% if (typeof isAuthenticated !=='undefined' && isAuthenticated) { %>
+        <!-- Vous pouvez ajouter ici des liens visibles uniquement pour les utilisateurs connectés -->
+        <a href="/books">Livres</a>
+        <a href="/gallery">Galerie des couvertures</a>
+        <a href="/logout">Déconnexion</a>
+        <% } else { %>
+            <a href="/login">Connexion</a>
+            <a href="/register">Inscription</a>
+            <% } %>
+                <a href="/contact">Contact</a>
 </nav>
+
+
 <br>
