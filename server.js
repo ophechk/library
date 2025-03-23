@@ -355,13 +355,13 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
     try {
         await db.sync({ force: false });
-        console.log('✅ Database synced successfully !');
+        console.log('✅ Base de données synchronisée avec succès !');
   
         app.listen(PORT, () => {
-            console.log(`🚀 server running on http://localhost:${PORT}`);
+            console.log(`🚀 Le serveur tourne : http://localhost:${PORT}`);
         });
     } catch (error) {
-        console.error(`❌ Error syncing database : `, error.message);
+        console.error(`❌ Erreur lors de la synchronisation à la base de données : `, error.message);
     }
 };
   
