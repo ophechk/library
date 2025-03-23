@@ -1,6 +1,7 @@
 const { Comment, Book, User } = require('../models');
 const createError = require('../middlewares/error');
 
+
 // Ajouter un commentaire
 exports.addComment = async (req, res, next) => {
     try {
@@ -62,5 +63,21 @@ exports.deleteComment = async (req, res, next) => {
         res.status(200).json({ message: "Commentaire supprimé avec succès" });
     } catch (error) {
         next(createError(500, "Erreur lors de la suppression du commentaire", error.message));
+    }
+};
+
+
+exports.modifyComment = async (req, res, next) => {
+    try {
+        const comment = await Comment.findbyPk(req.params.comment_id);
+
+        if(! comment) {
+            return next(createError(404, "Commentaire non trouvé"));
+        }
+
+        await comment.modify();
+        res.status(200).json({message: "Commentaire modifié avec succès"});
+    } catch (error) {
+        next(createError(500, "Erreur lors de la modification du commentaire", error.message));
     }
 };

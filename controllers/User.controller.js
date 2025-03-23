@@ -4,6 +4,7 @@ const { User } = require('../models');
 const ENV = require('../config');
 const createError = require('../middlewares/error'); 
 
+
 exports.signup = async (req, res, next) => {
   try{
     // Hachage de mot de passe
@@ -20,6 +21,7 @@ exports.signup = async (req, res, next) => {
     next(createError(500, "Erreur lors de l'inscription", error.message))
   }
 }
+
 
 exports.signin = async (req, res, next) => {
   try{
@@ -50,6 +52,7 @@ exports.signin = async (req, res, next) => {
   }
 }
 
+
 exports.getAllUsers = async (req, res, next) => {
   try{
     const users = await User.findAll();
@@ -58,6 +61,7 @@ exports.getAllUsers = async (req, res, next) => {
     next(createError(500, "Erreur lors de la récupération", error.message))
   }
 };
+
 
 // Vérifier si l'utilisateur est connecté
 exports.checkAuth = async (req, res, next) => {
@@ -75,7 +79,7 @@ exports.checkAuth = async (req, res, next) => {
   }
 };
 
-// Déconnexion
+
 exports.signout = async (req, res, next) => {
   try {
     // Supprimer le cookie d'authentification

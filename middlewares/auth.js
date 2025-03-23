@@ -4,6 +4,7 @@ const ENV = require('../config');
 const { User } = require('../models');
 const createError = require('./error');
 
+
 const authMiddleware = async (req, res, next) => {
   try {
     // Récupération du token depuis les cookies
