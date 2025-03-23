@@ -12,10 +12,6 @@ html, body {
     min-height: 100vh; /* Hauteur minimale à 100vh pour que le footer reste en bas */
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-}
 
 h1 {
     text-align: center;
@@ -83,5 +79,60 @@ nav a {
 
 .box h2{
     padding-top: 72px;
+}
+
+h2.books {
+    text-align: center;
+    font-size: 25px;
+}
+
+/* Title */
+.title {
+    font-size: 2em;
+    margin-top: 20px;
+    text-align: center;
+    color: #2c3e50;
+}
+
+/* Book Info */
+p {
+    font-size: 1.1em;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Divider */
+hr {
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Comments Section */
+.comment {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.comment p {
+    font-size: 1em;
+    color: #333;
+    margin: 10px 0;
+}
+
+.comment em {
+    font-style: italic;
+    color: #777;
+}
+
+/* Text Paragraphs */
+.texte {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
 }
 

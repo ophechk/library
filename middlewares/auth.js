@@ -4,7 +4,7 @@ const ENV = require('../config');
 const { User } = require('../models');
 const createError = require('./error');
 
-
+// Middleware pour vérifier le token JWT
 const authMiddleware = async (req, res, next) => {
   try {
     // Récupération du token depuis les cookies
@@ -40,4 +40,17 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+// Middleware vérifiant si l'utilisateur est authentifié via le JWT
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+      req.userId = req.user.id; // 'user' vient probablement de la session ou du JWT
+      return next();
+  }
+  return res.status(401).json({ error: 'Non autorisé' });
+};
+
+// Exports
+module.exports = { 
+  isAuthenticated,
+  authMiddleware
+};

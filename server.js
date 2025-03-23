@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { db, Book, User } = require('./models');
+const { db, Book, User, Comment } = require('./models');
 
 const app = express();
 
@@ -15,6 +15,7 @@ const app = express();
 const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
 const authRouter = require('./router/auth.router');
+const commentRouter = require('./router/comment.router');
 
 // PORT
 const PORT = ENV.PORT || 8000;
@@ -33,85 +34,78 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware pour les fichiers statiques (CSS, JS, images)
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-// Middleware d'authentification - à ajouter après vos autres middlewares
+// Middleware pour vérifier si l'utilisateur est authentifié via JWT
 const isAuthenticated = (req, res, next) => {
     try {
-      // Récupérer le token depuis les cookies
-      const token = req.cookies.access_token;
-      
-      if (!token) {
-        return res.redirect('/login?error=not_authenticated');
-      }
-      
-      // Vérifier et décoder le token
-      const decoded = jwt.verify(token, ENV.TOKEN);
-      
-      // Ajouter les informations de l'utilisateur à l'objet request
-      req.userId = decoded.id;
-      
-      // Continuer vers la route protégée
-      next();
-    } catch (error) {
-      console.error('Erreur d\'authentification:', error);
-      res.clearCookie('access_token');
-      return res.redirect('/login?error=invalid_token');
-    }
-  };
+        // Récupérer le token depuis les cookies
+        const token = req.cookies.access_token;
 
+        if (!token) {
+            return res.redirect('/login?error=not_authenticated');
+        }
 
-  
-  // Middleware pour vérifier si l'utilisateur est connecté (sans bloquer l'accès)
-  const checkAuthStatus = (req, res, next) => {
-    try {
-      const token = req.cookies.access_token;
-      if (token) {
+        // Vérifier et décoder le token
         const decoded = jwt.verify(token, ENV.TOKEN);
+
+        // Ajouter les informations de l'utilisateur à l'objet request
         req.userId = decoded.id;
-        req.isAuthenticated = true;
-      } else {
-        req.isAuthenticated = false;
-      }
+
+        // Continuer vers la route protégée
+        next();
     } catch (error) {
-      req.isAuthenticated = false;
-      res.clearCookie('access_token');
+        console.error('Erreur d\'authentification:', error);
+        res.clearCookie('access_token');
+        return res.redirect('/login?error=invalid_token');
+    }
+};
+
+// Middleware pour vérifier l'état de la connexion (optionnel, mais pratique)
+const checkAuthStatus = (req, res, next) => {
+    try {
+        const token = req.cookies.access_token;
+        if (token) {
+            const decoded = jwt.verify(token, ENV.TOKEN);
+            req.userId = decoded.id;
+            req.isAuthenticated = true;
+        } else {
+            req.isAuthenticated = false;
+        }
+    } catch (error) {
+        req.isAuthenticated = false;
+        res.clearCookie('access_token');
     }
     next();
-  };
+};
 
+// Appliquer le middleware de vérification à toutes les routes
+app.use(checkAuthStatus);
 
-  
-  // Appliquer le middleware de vérification à toutes les routes
-  app.use(checkAuthStatus);
-
-  // Route protégée
+// Routes
+// Route protégée
 app.get('/dashboard', isAuthenticated, async (req, res) => {
     try {
-      // Récupérer les informations de l'utilisateur
-      const user = await User.findByPk(req.userId);
-      
-      if (!user) {
-        // L'utilisateur n'existe plus dans la base de données
-        res.clearCookie('access_token');
-        return res.redirect('/login?error=user_not_found');
-      }
-      
-      res.render('pages/dashboard', { 
-        title: 'Tableau de bord',
-        user
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Erreur lors du chargement du tableau de bord');
-    }
-  });
+        const user = await User.findByPk(req.userId);
 
+        if (!user) {
+            res.clearCookie('access_token');
+            return res.redirect('/login?error=user_not_found');
+        }
+
+        res.render('pages/dashboard', { 
+            title: 'Tableau de bord',
+            user
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erreur lors du chargement du tableau de bord');
+    }
+});
 
 // PREFIX
 app.use('/api/user', userRouter);
 app.use('/api/book', bookRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/comment', commentRouter);
 
 // ROUTES PAGES
 // index page
@@ -120,7 +114,6 @@ app.get('/', async (req, res) => {
         // Récupérer tous les livres depuis la base de données
         const books = await Book.findAll();
 
-        // Rendre la vue 'index' et passer les livres à la vue
         res.render('pages/index', { 
             books,
             isAuthenticated: req.isAuthenticated
@@ -131,20 +124,21 @@ app.get('/', async (req, res) => {
     }
 });
 
+// Route pour afficher tous les livres
 app.get('/books', async (req, res) => {
     try {
-        // Récupérer tous les livres depuis la base de données
-        const books = await Book.findAll();
-
-        // Passer isAuthenticated à la vue
+        const books = await Book.findAll({
+            include: [{
+                model: Comment,
+                as: 'comments' // Utiliser l'alias approprié
+            }]
+        });
+        
         res.render('pages/books', { 
             books,
             isAuthenticated: req.isAuthenticated,
             user: req.user // Optionnel, si vous avez besoin des infos utilisateur
         });
-
-        // Rendre la vue 'index' et passer les livres à la vue
-        res.render('pages/books', { books });
     } catch (error) {
         console.error(error);
         res.status(500).send('Erreur lors de la récupération des livres');
@@ -152,29 +146,79 @@ app.get('/books', async (req, res) => {
 });
 
 
-// Doublons consolidés en une seule route pour les détails d'un livre
+
 app.get('/books/:id', async (req, res) => {
     try {
-        const book = await Book.findByPk(req.params.id); // Récupérer le livre par son ID
+        const book = await Book.findByPk(req.params.id, {
+            include: [
+                {
+                    model: Comment,
+                    as: 'comments', // Utiliser 'comments' si vous avez défini cet alias pour les commentaires
+                    include: [
+                        {
+                            model: User,
+                            as: 'user', // Assurez-vous que l'alias pour User est bien 'user'
+                            attributes: ['name']
+                        }
+                    ]
+                }
+            ]
+        });
+
         if (!book) {
             return res.status(404).send('Livre non trouvé');
         }
 
-        // Passer isAuthenticated à la vue
         res.render('pages/bookDetail', { 
             book,
+            comments: book.comments,  // Les commentaires sont associés avec 'comments'
             isAuthenticated: req.isAuthenticated,
             user: req.user
         });
-
-        // Rendre la vue 'bookDetail' et passer les détails du livre
-        res.render('pages/bookDetail', { book });
     } catch (error) {
         console.error(error);
         res.status(500).send('Erreur lors de la récupération des détails du livre');
     }
 });
 
+
+app.post('/books/:bookId/comments', async (req, res) => {
+    const bookId = req.params.bookId;
+    const userId = req.userId; // Récupérer l'ID utilisateur depuis le middleware
+    const { text } = req.body; // Récupérer le texte du commentaire
+
+    // Vérifier si le texte du commentaire est vide
+    if (!text || text.trim() === '') {
+        return res.status(400).send('Le commentaire ne peut pas être vide.');
+    }
+
+    try {
+        // Vérifier si un commentaire existe déjà pour cet utilisateur et ce livre
+        const existingComment = await Comment.findOne({
+            where: {
+                user_id: userId,
+                book_id: bookId
+            }
+        });
+
+        if (existingComment) {
+            return res.status(400).send('Vous avez déjà commenté ce livre.');
+        }
+
+        // Si aucun commentaire existant, créer un nouveau commentaire
+        await Comment.create({
+            user_id: userId,
+            book_id: bookId,
+            text,  // Le texte est maintenant validé et non null
+            comment_date: new Date()  // Utiliser la date actuelle pour le commentaire
+        });
+
+        res.redirect(`/books/${bookId}`);  // Rediriger vers la page du livre après l'ajout du commentaire
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erreur lors de l\'ajout du commentaire.');
+    }
+});
 
 app.get('/gallery', (req, res) => {
     // Exemple de données d'images
@@ -218,8 +262,8 @@ app.post('/contact/submit', (req, res) => {
     res.redirect('/contact?success=true');
 });
 
-// Routes pour l'authentification
-// Affichage des formulaires
+
+// Gestion des pages et des formulaires
 app.get('/login', (req, res) => {
     res.render('pages/login', { 
         query: req.query,
@@ -235,20 +279,18 @@ app.get('/register', (req, res) => {
     });
 });
 
-// Route pour se déconnecter
+// Déconnexion
 app.get('/logout', (req, res) => {
     res.clearCookie('access_token');
     res.redirect('/login?logout=true');
-  });
+});
 
 // Traitement des formulaires
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        
-        // Trouver l'utilisateur par email
         const user = await User.findOne({ where: { email } });
-        
+
         if (!user) {
             return res.render('pages/login', {
                 title: 'Connexion',
@@ -256,10 +298,9 @@ app.post('/login', async (req, res) => {
                 email
             });
         }
-        
-        // Vérifier le mot de passe
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
-        
+
         if (!isPasswordValid) {
             return res.render('pages/login', {
                 title: 'Connexion',
@@ -267,19 +308,16 @@ app.post('/login', async (req, res) => {
                 email
             });
         }
-        
-        // Génération du Token d'authentification
+
         const token = jwt.sign({ id: user.id }, ENV.TOKEN, { expiresIn: '24h' });
-        
-        // Création du cookie
+
         res.cookie('access_token', token, {
             httpOnly: true,
-            secure: false, // à mettre à true pour HTTPS
+            secure: false, // Mettre à true en mode production avec HTTPS
             sameSite: 'strict',
             maxAge: 24 * 60 * 60 * 1000 // 24 heures
         });
-        
-        // Redirection après connexion réussie
+
         return res.redirect('/');
     } catch (error) {
         console.error(error);
@@ -294,27 +332,24 @@ app.post('/login', async (req, res) => {
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password, confirmPassword } = req.body;
-        
-        // Validation
+
         if (password !== confirmPassword) {
             return res.render('pages/register', {
                 title: 'Inscription',
                 error: 'Les mots de passe ne correspondent pas',
-                name: name,
-                email: email
+                name,
+                email
             });
         }
-        
-        // Hashage du mot de passe
+
         const hashedPassword = await bcrypt.hash(password, 10);
-        
-        // Création de l'utilisateur
+
         await User.create({
             name,
             email,
             password: hashedPassword
         });
-        
+
         res.redirect('/login?registered=true');
     } catch (error) {
         console.error(error);
@@ -327,36 +362,27 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Middleware pour rendre isAuthenticated disponible dans toutes les vues
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.isAuthenticated;
-    res.locals.user = req.user;
-    next();
-});
-
-// La fonction checkIfLoggedIn ne doit pas être dans ce fichier serveur
-// Elle devrait plutôt être dans un fichier JavaScript côté client
-
-// MIDDLEWARE DE GESTION D'ERREURS - Déplacé à la fin avant le démarrage du serveur
+// Middleware de gestion des erreurs
 app.use((err, req, res, next) => {
     const status = err.status || 500;
     const message = err.message || "Une erreur est survenue.";
     const details = err.details || null;
-  
-    res.status(status).json({ error : {
-      status,
-      message,
-      details
-    }});
-});
 
+    res.status(status).json({
+        error: {
+            status,
+            message,
+            details
+        }
+    });
+});
 
 // SERVEUR
 const startServer = async () => {
     try {
         await db.sync({ force: false });
         console.log('✅ Base de données synchronisée avec succès !');
-  
+
         app.listen(PORT, () => {
             console.log(`🚀 Le serveur tourne : http://localhost:${PORT}`);
         });
@@ -364,5 +390,5 @@ const startServer = async () => {
         console.error(`❌ Erreur lors de la synchronisation à la base de données : `, error.message);
     }
 };
-  
+
 startServer();

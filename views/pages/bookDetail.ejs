@@ -9,28 +9,53 @@
 
     <%- include('../partials/header'); %>
 
-        <br>
-
         <h1 class="title">
             <%= book.title %>
         </h1>
-        <br>
-        <br>
+
         <p>Auteur : <%= book.author %>
         </p>
-        <br>
         <p>Description : <%= book.description %>
         </p>
-        <br>
         <p>Date de publication : <%= book.year_publication %>
         </p>
-        <br>
-        <br>
+
+        <hr>
+       <br/>
+        <h2 class="books">Commentaires</h2>
+        <br />
+
+        <% comments.forEach(comment=> { %>
+            <div class="comment">
+                <p>
+                    <%= comment.text %>
+                </p>
+                <% if (comment.user) { %>
+                    <p><em>Posté par : <%= comment.user.name %></em></p>
+                    <% } else { %>
+                        <p><em>Auteur inconnu</em></p>
+                        <% } %>
+            </div>
+            <% }); %>
+
+                <form action="/books/<%= book.id %>/comments" method="POST">
+                    <textarea name="text" required></textarea>
+                    <button type="submit">Envoyer</button>
+                </form>
+
+                <script>
+                    const form = document.querySelector('form');
+                    form.addEventListener('submit', function (event) {
+                        const commentText = form.querySelector('textarea[name="text"]').value.trim();
+                        if (!commentText) {
+                            event.preventDefault();
+                            alert('Le commentaire ne peut pas être vide.');
+                        }
+                    });
+                </script>
+
 
 </body>
-
-<br/>
-<br/>
 
 <%- include('../partials/footer'); %>
 

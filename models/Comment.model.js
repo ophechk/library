@@ -1,11 +1,11 @@
-const {DataTypes} = require('sequelize');
+const { DataTypes } = require('sequelize');
 const db = require('../config/db');
 
 const Comment = db.define('Comment', {
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true,  // Définir comme clé primaire
         references: {
             model: 'users',
             key: 'id'
@@ -14,7 +14,7 @@ const Comment = db.define('Comment', {
     book_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
+        primaryKey: true,  // Définir comme clé primaire
         references: {
             model: 'books',
             key: 'id'
@@ -31,12 +31,11 @@ const Comment = db.define('Comment', {
 }, {
     tableName: 'comment',
     timestamps: false,
-    underscored: true, // mets des undescores pour les mots composés (snakeCase)
-    // Définir explicitement la clé primaire composée
+    underscored: true, // utilise snake_case
     indexes: [
         {
             unique: true,
-            fields: ['user_id', 'book_id', 'comment_date']
+            fields: ['user_id', 'book_id', 'comment_date']  // Définir l'unicité de cette combinaison
         }
     ]
 });
