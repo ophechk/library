@@ -57,35 +57,57 @@ exports.addComment = async (req, res) => {
     }
 };
 
-
-// // Supprimer un commentaire
-// exports.deleteComment = async (req, res, next) => {
+// // Fonction de modification de commentaire
+// exports.modifyComment = async (req, res) => {
 //     try {
-//         const comment = await Comment.findByPk(req.params.comment_id);
+//         const { comment_id } = req.params;  // Récupérer l'ID du commentaire
+//         const { text } = req.body;         // Récupérer le texte du commentaire
 
+//         // Vérification si le commentaire existe
+//         const comment = await Comment.findByPk(comment_id);
 //         if (!comment) {
-//             return next(createError(404, "Commentaire non trouvé"));
+//             return res.status(404).json({ error: 'Commentaire non trouvé.' });
 //         }
 
-//         await comment.destroy();
-//         res.status(200).json({ message: "Commentaire supprimé avec succès" });
+//         // Vérifier que l'utilisateur est bien l'auteur du commentaire
+//         if (comment.user_id !== req.userId) {
+//             return res.status(403).json({ error: 'Vous n\'êtes pas autorisé à modifier ce commentaire.' });
+//         }
+
+//         // Mise à jour du commentaire
+//         comment.text = text; // Modifier le texte du commentaire
+//         await comment.save(); // Sauvegarder les modifications
+
+//         res.status(200).json(comment);  // Retourner le commentaire modifié
 //     } catch (error) {
-//         next(createError(500, "Erreur lors de la suppression du commentaire", error.message));
+//         console.error(error);
+//         res.status(500).json({ error: 'Erreur lors de la modification du commentaire' });
 //     }
 // };
 
-
-// exports.modifyComment = async (req, res, next) => {
+// // Fonction de suppression de commentaire
+// exports.deleteComment = async (req, res) => {
 //     try {
-//         const comment = await Comment.findbyPk(req.params.comment_id);
+//         const { comment_id } = req.params;  // Récupérer l'ID du commentaire
 
-//         if(! comment) {
-//             return next(createError(404, "Commentaire non trouvé"));
+//         // Vérification si le commentaire existe
+//         const comment = await Comment.findByPk(comment_id);
+//         if (!comment) {
+//             return res.status(404).json({ error: 'Commentaire non trouvé.' });
 //         }
 
-//         await comment.modify();
-//         res.status(200).json({message: "Commentaire modifié avec succès"});
+//         // Vérifier que l'utilisateur est bien l'auteur du commentaire
+//         if (comment.user_id !== req.userId) {
+//             return res.status(403).json({ error: 'Vous n\'êtes pas autorisé à supprimer ce commentaire.' });
+//         }
+
+//         // Supprimer le commentaire
+//         await comment.destroy();  // Supprimer le commentaire de la base de données
+
+//         res.status(200).json({ message: 'Commentaire supprimé avec succès.' });  // Retourner un message de succès
 //     } catch (error) {
-//         next(createError(500, "Erreur lors de la modification du commentaire", error.message));
+//         console.error(error);
+//         res.status(500).json({ error: 'Erreur lors de la suppression du commentaire' });
 //     }
 // };
+
