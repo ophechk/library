@@ -84,6 +84,7 @@ nav a {
 h2.books {
     text-align: center;
     font-size: 25px;
+    margin-bottom: 15px;
 }
 
 /* Title */
@@ -136,3 +137,15 @@ hr {
     margin-bottom: 15px;
 }
 
+button.detail {
+    width: 10%;
+    padding: 12px;
+    background-color: #16a085;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 15px;
+}
