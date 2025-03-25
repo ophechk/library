@@ -1,20 +1,19 @@
-<!-- views/partials/header.ejs -->
-<link rel="stylesheet" href="/css/styles.css">
-<link rel="stylesheet" href="/css/form.css">
-<link rel="stylesheet" href="/css/footer.css">
-<nav>
-    <a href="/">Accueil</a>
-    <% if (typeof isAuthenticated !=='undefined' && isAuthenticated) { %>
-        <!-- Vous pouvez ajouter ici des liens visibles uniquement pour les utilisateurs connectés -->
-        <a href="/books">Livres</a>
-        <a href="/gallery">Galerie des couvertures</a>
-        <a href="/logout">Déconnexion</a>
+<header>
+    <nav>
+        <a href="/">Accueil</a>
+
+        <% if (typeof user !== 'undefined' && user) { %>
+            <!-- Lien visible uniquement pour les utilisateurs connectés -->
+            <a href="/books">Livres</a>
+            <a href="/gallery">Galerie des couvertures</a>
+            <a href="/profile">Voir mon profil</a> <!-- Lien vers la page du profil -->
+            <a href="/logout">Déconnexion</a>
         <% } else { %>
+            <!-- Liens visibles pour les utilisateurs non connectés -->
             <a href="/login">Connexion</a>
             <a href="/register">Inscription</a>
-            <% } %>
-                <a href="/contact">Contact</a>
-</nav>
+        <% } %>
 
-
-<br>
+        <a href="/contact">Contact</a>
+    </nav>
+</header>

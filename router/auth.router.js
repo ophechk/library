@@ -4,67 +4,100 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models'); // Assurez-vous d'importer le modèle User
 
-// Route de connexion
+// 🔐 Routes GET : Affichage des pages
 router.get('/login', (req, res) => {
-    res.render('pages/login');
+    res.render('pages/login', { 
+        query: req.query,
+        title: 'Connexion',
+        page: 'login'
+    });
 });
 
-// Route d'inscription
 router.get('/register', (req, res) => {
-    res.render('pages/register');
+    res.render('pages/register', { 
+        title: 'Inscription',
+        page: 'register'
+    });
 });
 
-// Route pour se déconnecter
+// 🚪 Route de déconnexion
 router.get('/logout', (req, res) => {
     res.clearCookie('access_token');
     res.redirect('/login?logout=true');
 });
 
-// Vous pouvez ajouter des méthodes POST ou PUT pour traiter l'inscription et la connexion
-// Exemple pour POST /login (vérification des identifiants)
+// 🟠 Route POST : Connexion
 router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
     try {
-        const { email, password } = req.body;
-        
         const user = await User.findOne({ where: { email } });
-        
-        if (!user) {
+
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.render('pages/login', {
                 title: 'Connexion',
                 error: 'Email ou mot de passe incorrect',
                 email
             });
         }
-        
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        
-        if (!isPasswordValid) {
-            return res.render('pages/login', {
-                title: 'Connexion',
-                error: 'Email ou mot de passe incorrect',
-                email
-            });
-        }
-        
+
         const token = jwt.sign({ id: user.id }, process.env.TOKEN, { expiresIn: '24h' });
-        
+
         res.cookie('access_token', token, {
             httpOnly: true,
-            secure: false, 
+            secure: false,
             sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000
+            maxAge: 24 * 60 * 60 * 1000 // 24h
         });
-        
+
         res.redirect('/');
     } catch (error) {
-        console.error(error);
+        console.error('Erreur lors de la connexion:', error);
         res.render('pages/login', {
             title: 'Connexion',
             error: 'Une erreur est survenue lors de la connexion',
-            email: req.body.email
+            email
         });
     }
 });
 
-// Exporter le router
+// 🟢 Route POST : Inscription
+router.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+        // Vérifie si l'utilisateur existe déjà
+        const existingUser = await User.findOne({ where: { email } });
+
+        if (existingUser) {
+            return res.render('pages/register', {
+                title: 'Inscription',
+                error: 'Cet email est déjà utilisé.',
+                name,
+                email
+            });
+        }
+
+        // Hashage du mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Création de l'utilisateur
+        await User.create({
+            name,
+            email,
+            password: hashedPassword
+        });
+
+        res.redirect('/login?registerSuccess=true');
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription:', error);
+        res.render('pages/register', {
+            title: 'Inscription',
+            error: 'Une erreur est survenue lors de l\'inscription.',
+            name,
+            email
+        });
+    }
+});
+
 module.exports = router;

@@ -149,3 +149,47 @@ button.detail {
     transition: background-color 0.3s ease;
     font-size: 15px;
 }
+
+.container-profile {
+    max-width: 800px;
+    margin: 100px auto; /* 30px en haut et en bas, auto sur les côtés pour centrer */
+    padding: 100px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Boutons */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: #16a085;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #427AA1;
+    transform: translateY(-2px);
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container-profile {
+        margin: 20px;
+        padding: 20px;
+    }
+}
