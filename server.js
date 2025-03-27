@@ -21,6 +21,7 @@ const indexRouter = require('./router/index.router');
 const profileRouter = require('./router/profile.router');
 
 
+
 // PORT
 const PORT = ENV.PORT || 8000;
 
@@ -31,15 +32,16 @@ app.use(cookieParser());
 // Middleware pour analyser les corps codés en URL
 app.use(express.urlencoded({ extended: true }));
 
+
 // Configuration du moteur de vues EJS
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views')); 
-
+// Indique à Express de chercher les vues dans le dossier 'views/pages'
+app.set('views', path.join(__dirname, 'views/pages'));
 // Configuration des partials (dossier contenant les fichiers "head", "footer", etc.)
 app.locals.partials = path.join(__dirname, 'views', 'partials');
-
 // Configuration des fichiers statiques (CSS, images, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Middleware pour vérifier si l'utilisateur est authentifié via JWT
 const isAuthenticated = (req, res, next) => {
@@ -130,7 +132,7 @@ app.use('/', bookRouter);
 app.use('/api', commentRouter);
 app.use('/', indexRouter);
 app.use('/gallery', galleryRouter);
-app.use('/contact', contactRouter);
+app.use(contactRouter); 
 app.use('/', require('./router/auth.router'));
 // Ajoutez cette ligne avec vos autres routes
 app.use('/profile', require('./router/profile.router'));
