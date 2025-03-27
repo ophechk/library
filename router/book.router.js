@@ -54,9 +54,10 @@ router.get('/books/:id', async (req, res) => {
 });
 
 // Route pour ajouter un commentaire
+// Route pour ajouter un commentaire
 router.post('/:bookId/comments', async (req, res) => {
     const bookId = req.params.bookId;
-    const userId = req.userId;
+    const userId = req.user.id; // Utilise req.user.id, pas req.userId
     const { text } = req.body;
 
     if (!text || text.trim() === '') {
@@ -88,6 +89,43 @@ router.post('/:bookId/comments', async (req, res) => {
         res.status(500).send('Erreur lors de l\'ajout du commentaire.');
     }
 });
+
+// Route pour ajouter un commentaire (vérification du double post)
+router.post('/books/:bookId/comments', async (req, res) => {
+    const bookId = req.params.bookId;
+    const userId = req.user.id; // Utilise req.user.id ici aussi
+    const { text } = req.body;
+
+    if (!text || text.trim() === '') {
+        return res.status(400).send('Le commentaire ne peut pas être vide.');
+    }
+
+    try {
+        const existingComment = await Comment.findOne({
+            where: {
+                user_id: userId,
+                book_id: bookId
+            }
+        });
+
+        if (existingComment) {
+            return res.status(400).send('Vous avez déjà commenté ce livre.');
+        }
+
+        await Comment.create({
+            user_id: userId,
+            book_id: bookId,
+            text,
+            comment_date: new Date()
+        });
+
+        res.redirect(`/books/${bookId}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erreur lors de l\'ajout du commentaire.');
+    }
+});
+
 
 
 // Route pour ajouter un commentaire

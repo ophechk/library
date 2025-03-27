@@ -1,5 +1,3 @@
-// middlewares/auth.js
-
 const jwt = require('jsonwebtoken');
 const ENV = require('../config');  // Assure-toi que ton fichier config.js contient la clé TOKEN
 const { User } = require('../models');

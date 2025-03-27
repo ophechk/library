@@ -35,8 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configuration du moteur de vues EJS
 app.set('view engine', 'ejs');
-// Indique à Express de chercher les vues dans le dossier 'views/pages'
-app.set('views', path.join(__dirname, 'views/pages'));
+// Définir le répertoire des vues
+app.set('views', path.join(__dirname, 'views'));
 // Configuration des partials (dossier contenant les fichiers "head", "footer", etc.)
 app.locals.partials = path.join(__dirname, 'views', 'partials');
 // Configuration des fichiers statiques (CSS, images, etc.)

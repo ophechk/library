@@ -209,3 +209,8 @@ div.alert-alert-success {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+div.error-message {
+    text-align: center;
+    margin-bottom: 10px;
+}
