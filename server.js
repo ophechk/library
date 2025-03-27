@@ -7,19 +7,18 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { db, Book, User, Comment } = require('./models');
+const { db, User } = require('./models');
 
 const app = express();
 
 // IMPORTATIONS DES ROUTES
 const userRouter = require('./router/user.router');
 const bookRouter = require('./router/book.router');
-const authRouter = require('./router/auth.router');
 const commentRouter = require('./router/comment.router');
 const galleryRouter = require('./router/gallery.router');
 const contactRouter = require('./router/contact.router');
 const indexRouter = require('./router/index.router');
-// const profileRouter = require('./router/profile.router');
+const profileRouter = require('./router/profile.router');
 
 
 // PORT
@@ -35,8 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 // Configuration du moteur de vues EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views')); 
+
 // Configuration des partials (dossier contenant les fichiers "head", "footer", etc.)
 app.locals.partials = path.join(__dirname, 'views', 'partials');
+
 // Configuration des fichiers statiques (CSS, images, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -71,16 +72,32 @@ const checkAuthStatus = (req, res, next) => {
         const token = req.cookies.access_token;
         if (token) {
             const decoded = jwt.verify(token, ENV.TOKEN);
-            req.userId = decoded.id;
-            req.isAuthenticated = true;
+            // Récupérer l'utilisateur
+            User.findByPk(decoded.id)
+                .then(user => {
+                    if (user) {
+                        req.user = user;
+                        req.isAuthenticated = true;
+                    } else {
+                        req.isAuthenticated = false;
+                    }
+                    next();
+                })
+                .catch(error => {
+                    console.error('Erreur de récupération utilisateur :', error);
+                    req.isAuthenticated = false;
+                    next();
+                });
         } else {
             req.isAuthenticated = false;
+            next();
         }
     } catch (error) {
+        console.error('Erreur checkAuthStatus :', error);
         req.isAuthenticated = false;
         res.clearCookie('access_token');
+        next();
     }
-    next();
 };
 
 // Appliquer le middleware de vérification à toutes les routes
@@ -115,7 +132,8 @@ app.use('/', indexRouter);
 app.use('/gallery', galleryRouter);
 app.use('/contact', contactRouter);
 app.use('/', require('./router/auth.router'));
-// app.use('/profile', profileRouter);
+// Ajoutez cette ligne avec vos autres routes
+app.use('/profile', require('./router/profile.router'));
 
 
 

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head'); %>
+</head>
+
+<body>
+
+    <%- include('../partials/header'); %>
+
+        <h1>Paramètres de Profil</h1>
+
+        <p class="connecter">Connecté en tant que : <strong>
+                <%= user.name %>
+            </strong></p>
+
+        <% if (locals.updateSuccess) { %>
+            <div class="alert-alert-success">
+                Votre profil a été mis à jour avec succès !
+            </div>
+            <% } %>
+
+                <% if (locals.error) { %>
+                    <div class="alert alert-danger">
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                    <h2 class="form">Changer de nom d'utilisateur</h2>
+
+                        <!-- Formulaire de mise à jour du nom d'utilisateur -->
+                        <form action="/profile/update/name" class="logForm" method="POST">
+                            <div class="form-group">
+                                <label for="name">Nom d'utilisateur</label>
+                                <input type="text" id="name" name="name" class="form-control" value="<%= user.name %>"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Mettre à jour le nom</button>
+                        </form>
+
+                        <hr>
+
+                        <h2 class="form">Changer de mot de passe</h2>
+
+                        <!-- Formulaire de mise à jour du mot de passe -->
+                        <form action="/profile/update/password" class="logForm" method="POST">
+                            <div class="form-group">
+                                <label for="password">Nouveau mot de passe</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Mettre à jour le mot de passe</button>
+                        </form>
+</body>
+
+<%- include('../partials/footer'); %>
+
+</html>

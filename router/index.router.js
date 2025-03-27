@@ -1,17 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const { Book } = require('../models');
-const { authMiddleware } = require('../middlewares/auth');
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        // Récupérer tous les livres depuis la base de données
         const books = await Book.findAll();
-
-        // Passer les livres et l'utilisateur à la vue
-        res.render('pages/index', { 
+        
+        // Utilisez req.user qui devrait être défini par checkAuthStatus
+        res.render('pages/index', {
             books,
-            user: req.user // Passe l'utilisateur authentifié à la vue
+            user: req.user, // Passez l'utilisateur à la vue
+            loginSuccess: req.query.login === 'success' // Pour afficher un message de bienvenue
         });
     } catch (error) {
         console.error(error);

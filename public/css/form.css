@@ -190,3 +190,22 @@ button[type="submit"]:hover {
     align-items: center;
     color : #16a085;
 }
+
+.connecter {
+    text-align: center;
+    margin-bottom: 20px;
+    color : rgb(36, 128, 78);
+}
+
+h2.form {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+div.alert-alert-success {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
