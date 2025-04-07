@@ -1,9 +1,5 @@
 const { Book, Comment, User } = require('../models');
 const createError = require('../middlewares/error');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const ENV = require('../config');
-
 
 // Détail d'un livre
 exports.getBookDetails = async (req, res, next) => {

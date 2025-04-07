@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models'); // Assurez-vous d'importer le modèle User
 
-// 🔐 Routes GET : Affichage des pages
+// Routes GET : Affichage des pages
 router.get('/login', (req, res) => {
     res.render('pages/login', { 
         query: req.query,
@@ -20,13 +20,13 @@ router.get('/register', (req, res) => {
     });
 });
 
-// 🚪 Route de déconnexion
+// Route de déconnexion
 router.get('/logout', (req, res) => {
     res.clearCookie('access_token');
     res.redirect('/login?logout=true');
 });
 
-// 🟠 Route POST : Connexion
+// Route POST : Connexion
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -41,13 +41,13 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        const token = jwt.sign({ id: user.id }, process.env.TOKEN, { expiresIn: '24h' });
+        const token = jwt.sign({ id: user.id }, process.env.TOKEN, { expiresIn: '1h' });
 
         res.cookie('access_token', token, {
             httpOnly: true,
             secure: false,
             sameSite: 'strict',
-            maxAge: 24 * 60 * 60 * 1000 // 24h
+            maxAge: 60 * 60 * 1000 // 1h
         });
 
         res.redirect('/');
