@@ -134,7 +134,6 @@ app.use('/', indexRouter);
 app.use('/gallery', galleryRouter);
 app.use(contactRouter); 
 app.use('/', require('./router/auth.router'));
-// Ajoutez cette ligne avec vos autres routes
 app.use('/profile', require('./router/profile.router'));
 
 

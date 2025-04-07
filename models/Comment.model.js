@@ -40,17 +40,17 @@ const Comment = db.define('Comment', {
     ]
 });
 
-// Définir les relations avec User et Book
-Comment.associate = (models) => {
-    Comment.belongsTo(models.User, {
-        foreignKey: 'user_id',
-        as: 'user'
-    });
+// // Définir les relations avec User et Book
+// Comment.associate = (models) => {
+//     Comment.belongsTo(models.User, {
+//         foreignKey: 'user_id',
+//         as: 'user'
+//     });
 
-    Comment.belongsTo(models.Book, {
-        foreignKey: 'book_id',
-        as: 'book'
-    });
-};
+//     Comment.belongsTo(models.Book, {
+//         foreignKey: 'book_id',
+//         as: 'book'
+//     });
+// };
 
 module.exports = Comment;

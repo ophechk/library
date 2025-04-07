@@ -18,14 +18,14 @@ const Category = db.define('Category', {
     underscored: true // mets des undescores pour les mots composés (snakeCase)
 });
 
-// Définir la relation avec Book (si nécessaire)
-Category.associate = (models) => {
-    if (models.Book) {
-        Category.hasMany(models.Book, {
-            foreignKey: 'category_id',
-            as: 'books'
-        });
-    }
-};
+// // Définir la relation avec Book (si nécessaire)
+// Category.associate = (models) => {
+//     if (models.Book) {
+//         Category.hasMany(models.Book, {
+//             foreignKey: 'category_id',
+//             as: 'books'
+//         });
+//     }
+// };
 
 module.exports = Category;
